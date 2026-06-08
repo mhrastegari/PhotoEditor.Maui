@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="PhotoEditor.Maui.PhotoEditorView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pe="clr-namespace:PhotoEditor.Maui"
+    x:Name="EditorRoot">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto" RowSpacing="0">
+        <Border
+            x:Name="TopToolbarShell"
+            Grid.Row="0"
+            Margin="12,8"
+            Padding="12,10"
+            StrokeThickness="0">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <HorizontalStackLayout
+                    x:Name="HistoryToolbar"
+                    FlowDirection="LeftToRight"
+                    Spacing="6"
+                    VerticalOptions="Center">
+                    <Button
+                        x:Name="UndoToolButton"
+                        Clicked="OnUndoToolClicked"
+                        IsEnabled="False" />
+                    <Button
+                        x:Name="RedoToolButton"
+                        Clicked="OnRedoToolClicked"
+                        IsEnabled="False" />
+                </HorizontalStackLayout>
+
+                <ScrollView
+                    Grid.Column="1"
+                    HorizontalOptions="End"
+                    HorizontalScrollBarVisibility="Never"
+                    Orientation="Horizontal"
+                    VerticalOptions="Center">
+                    <HorizontalStackLayout
+                        x:Name="BuiltInToolbar"
+                        Spacing="6"
+                        VerticalOptions="Center">
+                        <Button x:Name="CropToolButton" Clicked="OnCropToolClicked" />
+                        <Button x:Name="DrawToolButton" Clicked="OnDrawToolClicked" />
+                        <Button x:Name="ArrowToolButton" Clicked="OnArrowToolClicked" />
+                        <Button x:Name="TextToolButton" Clicked="OnTextToolClicked" />
+                        <Button
+                            x:Name="RotateCropToolButton"
+                            Clicked="OnRotateCropToolClicked"
+                            IsVisible="False" />
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </Grid>
+        </Border>
+
+        <pe:SkiaPhotoEditorView
+            x:Name="PhotoEditorControl"
+            Grid.Row="1"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill" />
+
+        <Border
+            x:Name="DrawColorPaletteShell"
+            Grid.Row="2"
+            Margin="12,8,12,0"
+            Padding="10,8"
+            IsVisible="False"
+            StrokeThickness="0">
+            <HorizontalStackLayout
+                x:Name="DrawColorPalette"
+                HorizontalOptions="Center"
+                Spacing="10" />
+        </Border>
+
+        <Border
+            x:Name="TextFontSizePaletteShell"
+            Grid.Row="3"
+            Margin="12,8,12,0"
+            Padding="10,8"
+            IsVisible="False"
+            StrokeThickness="0">
+            <HorizontalStackLayout
+                x:Name="TextFontSizePalette"
+                HorizontalOptions="Center"
+                Spacing="10" />
+        </Border>
+
+        <Grid
+            x:Name="ToolActionBar"
+            Grid.Row="4"
+            Padding="16,10,16,12"
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="10"
+            IsVisible="False">
+            <Button x:Name="CancelCropToolButton" Clicked="OnCancelCropToolClicked" />
+            <Button
+                x:Name="ApplyCropToolButton"
+                Grid.Column="2"
+                Clicked="OnApplyCropToolClicked" />
+        </Grid>
+
+        <Grid
+            x:Name="EditorActionBar"
+            Grid.Row="4"
+            Padding="16,10,16,16"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="12">
+            <Button x:Name="CancelButton" Clicked="OnCancelClicked" />
+            <Button
+                x:Name="DoneButton"
+                Grid.Column="1"
+                Clicked="OnDoneClicked" />
+        </Grid>
+    </Grid>
+</ContentView>
