@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Windows Machine": {
+      "commandName": "Project"
+    },
+    "Windows Machine (Package)": {
+      "commandName": "MsixPackage"
+    }
+  }
+}

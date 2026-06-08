@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PhotoEditor.Maui.Sample.Pages.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="PhotoEditor Demo">
+
+    <VerticalStackLayout
+        Padding="24"
+        Spacing="12"
+        VerticalOptions="Center">
+        <Label
+            FontAttributes="Bold"
+            FontSize="22"
+            HorizontalTextAlignment="Center"
+            Text="PhotoEditor samples" />
+        <Label
+            FontSize="14"
+            HorizontalTextAlignment="Center"
+            LineBreakMode="WordWrap"
+            Text="Pick a photo to open the built-in editor as-is, with a customized theme, or fully custom UI."
+            TextColor="{StaticResource Gray500}" />
+
+        <Button
+            x:Name="PickBuiltInButton"
+            Clicked="OnPickBuiltInClicked"
+            Text="Pick photo (built-in UI)" />
+        <Button
+            x:Name="PickThemedDefaultButton"
+            BackgroundColor="#7C3AED"
+            Clicked="OnPickThemedDefaultClicked"
+            Text="Pick photo (themed default UI)"
+            TextColor="White" />
+        <Button
+            x:Name="PickCustomButton"
+            BackgroundColor="#FF6B6B"
+            Clicked="OnPickCustomClicked"
+            Text="Pick photo (custom UI)"
+            TextColor="#1A1A2E" />
+    </VerticalStackLayout>
+</ContentPage>

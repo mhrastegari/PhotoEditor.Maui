@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PhotoEditor.Maui.Sample.Pages.ThemedDefaultEditorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mhr="http://mhrastegari.com/photoeditor"
+    xmlns:themes="clr-namespace:PhotoEditor.Maui.Sample.Themes"
+    BackgroundColor="{x:Static themes:ThemedDefaultEditorTheme.PageBackground}"
+    Shell.NavBarIsVisible="False"
+    Title="Themed default UI">
+
+    <mhr:PhotoEditorView x:Name="Editor" ShowBuiltInToolbar="True" />
+</ContentPage>

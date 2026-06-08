@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="PhotoEditor.Maui.Sample.Pages.CustomEditorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mhr="http://mhrastegari.com/photoeditor"
+    BackgroundColor="#1A1A2E"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" RowSpacing="0">
+        <Grid
+            Grid.Row="0"
+            Padding="12,8"
+            BackgroundColor="#1A1A2E"
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="8">
+            <Button
+                x:Name="CloseButton"
+                BackgroundColor="Transparent"
+                Clicked="OnCloseClicked"
+                FontSize="22"
+                HeightRequest="44"
+                Text="✕"
+                TextColor="#F5F5F5"
+                WidthRequest="44" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalOptions="Center"
+                Text="Custom UI"
+                TextColor="#F5F5F5"
+                VerticalOptions="Center" />
+            <Button
+                x:Name="SaveButton"
+                Grid.Column="2"
+                Padding="16,0"
+                BackgroundColor="#FF6B6B"
+                Clicked="OnSaveClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="40"
+                Text="Save"
+                TextColor="#1A1A2E" />
+        </Grid>
+
+        <mhr:PhotoEditorView
+            x:Name="PhotoEditorControl"
+            Grid.Row="1"
+            BackgroundColor="#1A1A2E"
+            ShowBuiltInToolbar="False" />
+
+        <Grid
+            x:Name="ToolModeBar"
+            Grid.Row="2"
+            Padding="16,10"
+            BackgroundColor="#2D2D44"
+            ColumnDefinitions="Auto,*,Auto,Auto"
+            ColumnSpacing="12"
+            IsVisible="False">
+            <Button
+                x:Name="ToolCancelButton"
+                BackgroundColor="#3D3D5C"
+                Clicked="OnToolCancelClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="44"
+                Text="Cancel"
+                TextColor="#F5F5F5" />
+            <Button
+                x:Name="RotateCropButton"
+                Grid.Column="2"
+                BackgroundColor="#3D3D5C"
+                Clicked="OnRotateCropClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="44"
+                IsVisible="False"
+                Text="Rotate"
+                TextColor="#F5F5F5"
+                WidthRequest="88" />
+            <Button
+                x:Name="ToolApplyButton"
+                Grid.Column="3"
+                BackgroundColor="#FF6B6B"
+                Clicked="OnToolApplyClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="44"
+                Text="Apply"
+                TextColor="#1A1A2E"
+                WidthRequest="88" />
+        </Grid>
+
+        <ScrollView
+            x:Name="MainToolDock"
+            Grid.Row="3"
+            Padding="12,10"
+            BackgroundColor="#2D2D44"
+            Orientation="Horizontal">
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Button
+                    x:Name="CropToolButton"
+                    BackgroundColor="#3D3D5C"
+                    Clicked="OnCropToolClicked"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    HeightRequest="44"
+                    MinimumWidthRequest="72"
+                    Text="Crop"
+                    TextColor="#F5F5F5" />
+                <Button
+                    x:Name="DrawToolButton"
+                    BackgroundColor="#3D3D5C"
+                    Clicked="OnDrawToolClicked"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    HeightRequest="44"
+                    MinimumWidthRequest="72"
+                    Text="Draw"
+                    TextColor="#F5F5F5" />
+                <Button
+                    x:Name="ArrowToolButton"
+                    BackgroundColor="#3D3D5C"
+                    Clicked="OnArrowToolClicked"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    HeightRequest="44"
+                    MinimumWidthRequest="72"
+                    Text="Arrow"
+                    TextColor="#F5F5F5" />
+                <Button
+                    x:Name="TextToolButton"
+                    BackgroundColor="#3D3D5C"
+                    Clicked="OnTextToolClicked"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    HeightRequest="44"
+                    MinimumWidthRequest="72"
+                    Text="Text"
+                    TextColor="#F5F5F5" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <HorizontalStackLayout
+            x:Name="HistoryBar"
+            Grid.Row="4"
+            Padding="16,6"
+            BackgroundColor="#1A1A2E"
+            Spacing="10">
+            <Button
+                x:Name="UndoButton"
+                BackgroundColor="#2D2D44"
+                Clicked="OnUndoClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="40"
+                IsEnabled="False"
+                Text="Undo"
+                TextColor="#F5F5F5"
+                WidthRequest="80" />
+            <Button
+                x:Name="RedoButton"
+                BackgroundColor="#2D2D44"
+                Clicked="OnRedoClicked"
+                CornerRadius="10"
+                FontAttributes="Bold"
+                HeightRequest="40"
+                IsEnabled="False"
+                Text="Redo"
+                TextColor="#F5F5F5"
+                WidthRequest="80" />
+        </HorizontalStackLayout>
+
+        <Grid
+            x:Name="StrokeSizeHost"
+            Grid.Row="5"
+            Padding="16,10"
+            BackgroundColor="#2D2D44"
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="12"
+            IsVisible="False">
+            <Label
+                FontAttributes="Bold"
+                Text="Size"
+                TextColor="#F5F5F5"
+                VerticalOptions="Center" />
+            <Slider
+                x:Name="StrokeSizeSlider"
+                Grid.Column="1"
+                Maximum="20"
+                Minimum="2"
+                ValueChanged="OnStrokeSizeSliderValueChanged"
+                VerticalOptions="Center" />
+            <Label
+                x:Name="StrokeSizeLabel"
+                Grid.Column="2"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="End"
+                Text="8"
+                TextColor="#F5F5F5"
+                VerticalOptions="Center"
+                WidthRequest="40" />
+        </Grid>
+
+        <ScrollView
+            x:Name="ColorPaletteHost"
+            Grid.Row="6"
+            BackgroundColor="#2D2D44"
+            HorizontalScrollBarVisibility="Never"
+            IsVisible="False"
+            Orientation="Horizontal">
+            <HorizontalStackLayout
+                x:Name="ColorPalette"
+                Padding="16,10"
+                Spacing="10" />
+        </ScrollView>
+
+        <ScrollView
+            x:Name="FontSizePaletteHost"
+            Grid.Row="6"
+            BackgroundColor="#2D2D44"
+            HorizontalScrollBarVisibility="Never"
+            IsVisible="False"
+            Orientation="Horizontal">
+            <HorizontalStackLayout
+                x:Name="FontSizePalette"
+                Padding="16,10"
+                Spacing="8" />
+        </ScrollView>
+    </Grid>
+</ContentPage>
