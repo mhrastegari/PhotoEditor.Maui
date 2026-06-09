@@ -31,7 +31,7 @@ internal readonly struct PhotoEditorResolvedTheme
         var textPrimary = ResolveColor(options.TextPrimaryColor, context, appTheme, "Gray900", "White", 0x212121, 0xFFFFFF);
         var textSecondary = ResolveColor(options.TextSecondaryColor, context, appTheme, "Gray500", "Gray300", 0x6E6E6E, 0xACACAC);
         var doneText = ResolveColor(options.DoneButtonTextColor, context, appTheme, "White", "PrimaryDarkText", 0xFFFFFF, 0x242424);
-        var toolbar = ResolveColor(options.ToolbarBackgroundColor, context, appTheme, "White", "Gray950", 0xDFD8F7, 0x141414);
+        var toolbar = ResolveColor(options.ToolbarBackgroundColor, context, appTheme, "White", "Gray950", 0xFFFFFF, 0x141414);
         var palette = ResolveColor(options.PaletteBackgroundColor, context, appTheme, "Gray100", "Gray950", 0xE1E1E1, 0x141414);
         var secondaryButton = ResolveColor(options.SecondaryButtonBackgroundColor, context, appTheme, "White", "Gray600", 0xFFFFFF, 0x404040);
         var border = ResolveColor(options.ButtonBorderColor, context, appTheme, "Gray200", "Gray500", 0xC8C8C8, 0x6E6E6E);
