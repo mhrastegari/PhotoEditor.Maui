@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore Workloads
+        run: dotnet workload restore ./PhotoEditor.Maui.sln
+
+      - name: Restore Dependencies
+        run: dotnet restore ./PhotoEditor.Maui.sln
+
+      - name: Build Library
+        run: dotnet build ./src/PhotoEditor.Maui/PhotoEditor.Maui.csproj
+
+      - name: Build Sample App
+        run: dotnet build ./samples/PhotoEditor.Maui.Sample/PhotoEditor.Maui.Sample.csproj

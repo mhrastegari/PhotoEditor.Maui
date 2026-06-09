@@ -1,0 +1,38 @@
+name: CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore Workloads
+        run: dotnet workload restore .\src\PhotoEditor.Maui\PhotoEditor.Maui.csproj
+
+      - name: Restore Dependencies
+        run: dotnet restore .\src\PhotoEditor.Maui\PhotoEditor.Maui.csproj
+
+      - name: Build Library
+        run: dotnet build .\src\PhotoEditor.Maui\PhotoEditor.Maui.csproj -c Release
+
+      - name: Pack NuGet
+        run: dotnet pack .\src\PhotoEditor.Maui\PhotoEditor.Maui.csproj -c Release -o .\nupkg -p:GeneratePackageOnBuild=false
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg-files
+          path: .\nupkg\*.nupkg
+
+      - name: Push to NuGet
+        run: dotnet nuget push .\nupkg\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
