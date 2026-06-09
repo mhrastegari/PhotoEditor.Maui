@@ -1,4 +1,3 @@
-using PhotoEditor.Maui.Controls;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
@@ -125,6 +124,8 @@ public partial class SkiaPhotoEditorView
             canvas.DrawPath(path, paint);
         }
 
+        var headLimitScale = 1f / GetBitmapDisplayScale();
+
         foreach (var arrow in _arrows)
         {
             if (arrow.Points.Count < 2)
@@ -134,7 +135,8 @@ public partial class SkiaPhotoEditorView
                 canvas,
                 arrow.Points,
                 arrow.Color,
-                arrow.Width);
+                arrow.Width,
+                headLimitScale: headLimitScale);
         }
 
         foreach (var overlay in _textOverlays)

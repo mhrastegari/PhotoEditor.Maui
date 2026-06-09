@@ -43,7 +43,8 @@ internal static class SkiaPhotoEditorArrowRenderer
         IReadOnlyList<SKPoint> points,
         SKColor color,
         float strokeWidth,
-        float headRevealProgress = 1f)
+        float headRevealProgress = 1f,
+        float headLimitScale = 1f)
     {
         if (headRevealProgress <= 0.001f)
         {
@@ -57,14 +58,14 @@ internal static class SkiaPhotoEditorArrowRenderer
             return;
         }
 
-        var headSpan = ComputeHeadSpan(strokeWidth, headRevealProgress);
+        var headSpan = ComputeHeadSpan(strokeWidth, headRevealProgress, headLimitScale);
         if (headSpan < 0.5f)
         {
             DrawPath(canvas, points, color, strokeWidth);
             return;
         }
 
-        var layoutHeadSpan = ComputeHeadSpan(strokeWidth, 1f);
+        var layoutHeadSpan = ComputeHeadSpan(strokeWidth, 1f, headLimitScale);
         ComputeChevronWings(tip, angle, layoutHeadSpan, out var left, out var right);
         var baseCenter = new SKPoint(
             (left.X + right.X) * 0.5f,
@@ -72,7 +73,7 @@ internal static class SkiaPhotoEditorArrowRenderer
 
         var headDepth = Distance(tip, baseCenter);
         DrawShaft(canvas, points, tip, baseCenter, headDepth, color, strokeWidth);
-        DrawChevronHead(canvas, tip, angle, color, strokeWidth, headRevealProgress);
+        DrawChevronHead(canvas, tip, angle, color, strokeWidth, headRevealProgress, headLimitScale);
     }
 
     private static void DrawChevronHead(
@@ -81,10 +82,11 @@ internal static class SkiaPhotoEditorArrowRenderer
         float angle,
         SKColor color,
         float strokeWidth,
-        float headRevealProgress)
+        float headRevealProgress,
+        float headLimitScale)
     {
         var progress = Math.Clamp(headRevealProgress, 0f, 1f);
-        var headSpan = ComputeHeadSpan(strokeWidth, progress);
+        var headSpan = ComputeHeadSpan(strokeWidth, progress, headLimitScale);
         if (headSpan < 0.5f)
             return;
 
@@ -224,9 +226,13 @@ internal static class SkiaPhotoEditorArrowRenderer
         return length;
     }
 
-    private static float ComputeHeadSpan(float strokeWidth, float progress) =>
-        Math.Clamp(strokeWidth * 3.5f * HeadSizeMultiplier, MinHeadLength, MaxHeadLength)
-        * Math.Clamp(progress, 0f, 1f);
+    private static float ComputeHeadSpan(float strokeWidth, float progress, float headLimitScale = 1f)
+    {
+        var minHeadLength = MinHeadLength * headLimitScale;
+        var maxHeadLength = MaxHeadLength * headLimitScale;
+        return Math.Clamp(strokeWidth * 3.5f * HeadSizeMultiplier, minHeadLength, maxHeadLength)
+            * Math.Clamp(progress, 0f, 1f);
+    }
 
     private static void ComputeChevronWings(
         SKPoint tip,
