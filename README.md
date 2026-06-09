@@ -12,6 +12,22 @@ A cross-platform .NET MAUI photo editor control with crop, freehand draw, arrows
 - PNG or JPEG export with max dimensions and quality
 - Themeable built-in toolbar (text, Unicode symbols, or icon font)
 
+## Preview
+
+### Built-in UI (default)
+
+![Built-in UI demo](https://github.com/user-attachments/assets/5caaea8b-5f01-46ed-a071-31c893c015ec)
+
+### Themed default UI
+
+![Themed default UI](https://github.com/user-attachments/assets/c9aa6246-f1d1-4c1f-b930-7b1048a0883a)
+
+### Custom UI
+
+| | |
+|:---:|:---:|
+| ![Custom UI](https://github.com/user-attachments/assets/ee76cb53-e5de-4cef-bac5-b3f102792ac8) | ![Custom UI 2](https://github.com/user-attachments/assets/787ca4a1-e4e6-42fd-9c1d-f307e8bf809f) |
+
 ## Installation
 
 ```bash
