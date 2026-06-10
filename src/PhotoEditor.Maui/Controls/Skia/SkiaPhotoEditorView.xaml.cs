@@ -44,7 +44,8 @@ public partial class SkiaPhotoEditorView : ContentView
     private int _loadGeneration;
 
     public SkiaPhotoEditorView()
-    {
+    {        
+        FlowDirection = FlowDirection.LeftToRight;
         InitializeComponent();
         TextInputEntry.TextChanged += OnTextInputEntryTextChanged;
         TextInputHost.SizeChanged += OnTextInputHostSizeChanged;
