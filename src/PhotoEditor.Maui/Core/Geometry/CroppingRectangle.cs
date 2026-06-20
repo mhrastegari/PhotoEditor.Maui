@@ -80,4 +80,34 @@ internal sealed class CroppingRectangle
     }
 
     public bool Contains(SKPoint point) => Rect.Contains(point);
+
+    public bool ContainsWithTolerance(SKPoint point, float tolerance)
+    {
+        var rect = Rect;
+        rect.Inflate(tolerance, tolerance);
+        return rect.Contains(point);
+    }
+
+    public int HitTestEdge(SKPoint point, float tolerance)
+    {
+        var rect = Rect;
+
+        if (Math.Abs(point.Y - rect.Top) <= tolerance &&
+            point.X >= rect.Left - tolerance && point.X <= rect.Right + tolerance)
+            return 0;
+
+        if (Math.Abs(point.Y - rect.Bottom) <= tolerance &&
+            point.X >= rect.Left - tolerance && point.X <= rect.Right + tolerance)
+            return 1;
+
+        if (Math.Abs(point.X - rect.Left) <= tolerance &&
+            point.Y >= rect.Top - tolerance && point.Y <= rect.Bottom + tolerance)
+            return 2;
+
+        if (Math.Abs(point.X - rect.Right) <= tolerance &&
+            point.Y >= rect.Top - tolerance && point.Y <= rect.Bottom + tolerance)
+            return 3;
+
+        return -1;
+    }
 }

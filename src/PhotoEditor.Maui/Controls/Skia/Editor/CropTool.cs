@@ -119,12 +119,20 @@ public partial class SkiaPhotoEditorView
 
         var pixelLocation = GetCanvasTouchPixel(e);
         var bitmapLocation = ViewToBitmap(pixelLocation);
-        var hitRadiusBitmap = Math.Abs(_inverseBitmapMatrix.ScaleX) * EditorOptions.Canvas.Crop.HandleHitRadiusViewPx;
+        var cropView = _bitmapMatrix.MapRect(_croppingRect.Rect);
+        var cropOptions = EditorOptions.Canvas.Crop;
+        var borderTolerance = cropOptions.BorderHitToleranceViewPx;
+        var cropFillsImage = NearlyEqual(_croppingRect.Rect, _croppingRect.MaxBounds);
 
         switch (e.ActionType)
         {
             case SKTouchAction.Pressed:
-                _activeHandle = HitTestCropHandle(bitmapLocation, hitRadiusBitmap);
+                _activeHandle = HitTestCropHandle(
+                    pixelLocation,
+                    cropView,
+                    borderTolerance,
+                    cropOptions.HandleHitRadiusViewPx,
+                    cropFillsImage);
                 if (_activeHandle == CropDragHandle.None)
                     break;
 
@@ -195,33 +203,114 @@ public partial class SkiaPhotoEditorView
             canvas.DrawCircle(handle, crop.HandleRadiusViewPx, handlePaint);
     }
 
-    private CropDragHandle HitTestCropHandle(SKPoint bitmapPoint, float radiusBitmap)
+    private static bool NearlyEqual(SKRect a, SKRect b, float epsilon = 0.5f) =>
+        Math.Abs(a.Left - b.Left) <= epsilon &&
+        Math.Abs(a.Top - b.Top) <= epsilon &&
+        Math.Abs(a.Right - b.Right) <= epsilon &&
+        Math.Abs(a.Bottom - b.Bottom) <= epsilon;
+
+    private static CropDragHandle HitTestCropHandle(
+        SKPoint viewPoint,
+        SKRect cropView,
+        float borderTolerance,
+        float cornerHitRadiusViewPx,
+        bool cropFillsImage)
     {
-        if (_croppingRect is null)
-            return CropDragHandle.None;
+        var cornerTolerance = cornerHitRadiusViewPx > 0f
+            ? cornerHitRadiusViewPx
+            : borderTolerance;
 
-        var corner = _croppingRect.HitTestCorner(bitmapPoint, radiusBitmap);
-        if (corner >= 0)
+        var corners = new (CropDragHandle Handle, SKPoint Point)[]
         {
-            return corner switch
-            {
-                0 => CropDragHandle.TopLeft,
-                1 => CropDragHandle.TopRight,
-                2 => CropDragHandle.BottomRight,
-                3 => CropDragHandle.BottomLeft,
-                _ => CropDragHandle.None
-            };
-        }
+            (CropDragHandle.TopLeft, new SKPoint(cropView.Left, cropView.Top)),
+            (CropDragHandle.TopRight, new SKPoint(cropView.Right, cropView.Top)),
+            (CropDragHandle.BottomRight, new SKPoint(cropView.Right, cropView.Bottom)),
+            (CropDragHandle.BottomLeft, new SKPoint(cropView.Left, cropView.Bottom)),
+        };
 
-        var rect = _croppingRect.Rect;
-        foreach (var (handle, point) in GetCropEdgeHandles(rect))
+        foreach (var (handle, point) in corners)
         {
-            var diff = bitmapPoint - point;
-            if (diff.LengthSquared < radiusBitmap * radiusBitmap)
+            if (Math.Abs(viewPoint.X - point.X) <= cornerTolerance &&
+                Math.Abs(viewPoint.Y - point.Y) <= cornerTolerance)
                 return handle;
         }
 
-        return _croppingRect.Contains(bitmapPoint) ? CropDragHandle.Move : CropDragHandle.None;
+        var edge = HitTestCropEdge(viewPoint, cropView, borderTolerance);
+        if (edge != CropDragHandle.None)
+            return edge;
+
+        if (cropFillsImage)
+            return CropDragHandle.None;
+
+        return cropView.Contains(viewPoint) ? CropDragHandle.Move : CropDragHandle.None;
+    }
+
+    private static CropDragHandle HitTestCropEdge(SKPoint viewPoint, SKRect cropView, float tolerance)
+    {
+        var distTop = Math.Abs(viewPoint.Y - cropView.Top);
+        var distBottom = Math.Abs(viewPoint.Y - cropView.Bottom);
+        var distLeft = Math.Abs(viewPoint.X - cropView.Left);
+        var distRight = Math.Abs(viewPoint.X - cropView.Right);
+
+        var nearTop = distTop <= tolerance &&
+                      viewPoint.X >= cropView.Left - tolerance &&
+                      viewPoint.X <= cropView.Right + tolerance;
+        var nearBottom = distBottom <= tolerance &&
+                         viewPoint.X >= cropView.Left - tolerance &&
+                         viewPoint.X <= cropView.Right + tolerance;
+        var nearLeft = distLeft <= tolerance &&
+                       viewPoint.Y >= cropView.Top - tolerance &&
+                       viewPoint.Y <= cropView.Bottom + tolerance;
+        var nearRight = distRight <= tolerance &&
+                        viewPoint.Y >= cropView.Top - tolerance &&
+                        viewPoint.Y <= cropView.Bottom + tolerance;
+
+        if (!nearTop && !nearBottom && !nearLeft && !nearRight)
+            return CropDragHandle.None;
+
+        var min = float.MaxValue;
+        CropDragHandle nearest = CropDragHandle.None;
+
+        if (nearTop && distTop < min)
+        {
+            min = distTop;
+            nearest = CropDragHandle.Top;
+        }
+
+        if (nearBottom && distBottom < min)
+        {
+            min = distBottom;
+            nearest = CropDragHandle.Bottom;
+        }
+
+        if (nearLeft && distLeft < min)
+        {
+            min = distLeft;
+            nearest = CropDragHandle.Left;
+        }
+
+        if (nearRight && distRight < min)
+        {
+            min = distRight;
+            nearest = CropDragHandle.Right;
+        }
+
+        return nearest;
+    }
+
+    private static IEnumerable<SKPoint> GetCropHandlePoints(SKRect cropView)
+    {
+        var cx = cropView.MidX;
+        var cy = cropView.MidY;
+
+        yield return new SKPoint(cx, cropView.Top);
+        yield return new SKPoint(cx, cropView.Bottom);
+        yield return new SKPoint(cropView.Left, cy);
+        yield return new SKPoint(cropView.Right, cy);
+        yield return new SKPoint(cropView.Left, cropView.Top);
+        yield return new SKPoint(cropView.Right, cropView.Top);
+        yield return new SKPoint(cropView.Left, cropView.Bottom);
+        yield return new SKPoint(cropView.Right, cropView.Bottom);
     }
 
     private void MoveCropHandle(
@@ -294,26 +383,5 @@ public partial class SkiaPhotoEditorView
             CropDragHandle.Move => new SKPoint(rect.Left, rect.Top),
             _ => new SKPoint(rect.Left, rect.Top)
         };
-    }
-
-    private static IEnumerable<(CropDragHandle Handle, SKPoint Point)> GetCropEdgeHandles(SKRect rect)
-    {
-        var cx = rect.MidX;
-        var cy = rect.MidY;
-        yield return (CropDragHandle.Top, new SKPoint(cx, rect.Top));
-        yield return (CropDragHandle.Bottom, new SKPoint(cx, rect.Bottom));
-        yield return (CropDragHandle.Left, new SKPoint(rect.Left, cy));
-        yield return (CropDragHandle.Right, new SKPoint(rect.Right, cy));
-    }
-
-    private static IEnumerable<SKPoint> GetCropHandlePoints(SKRect cropView)
-    {
-        foreach (var (_, point) in GetCropEdgeHandles(cropView))
-            yield return point;
-
-        yield return new SKPoint(cropView.Left, cropView.Top);
-        yield return new SKPoint(cropView.Right, cropView.Top);
-        yield return new SKPoint(cropView.Left, cropView.Bottom);
-        yield return new SKPoint(cropView.Right, cropView.Bottom);
     }
 }

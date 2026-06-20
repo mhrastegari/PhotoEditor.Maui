@@ -36,9 +36,35 @@ public partial class SkiaPhotoEditorView
         _surfaceWidth = canvasWidth;
         _surfaceHeight = canvasHeight;
 
-        var scale = Math.Min((float)canvasWidth / imageWidth, (float)canvasHeight / imageHeight);
-        var x = (canvasWidth - scale * imageWidth) / 2f;
-        var y = (canvasHeight - scale * imageHeight) / 2f;
+        var padLeft = 0f;
+        var padRight = 0f;
+        var padTop = 0f;
+        var padBottom = 0f;
+
+        if (InteractionMode == SkiaPhotoEditorInteractionMode.Crop)
+        {
+            var handlePad = EditorOptions.Canvas.Crop.HandleRadiusViewPx;
+            var previewScale = Math.Min((float)canvasWidth / imageWidth, (float)canvasHeight / imageHeight);
+            var previewW = previewScale * imageWidth;
+            var previewH = previewScale * imageHeight;
+            var previewX = (canvasWidth - previewW) / 2f;
+            var previewY = (canvasHeight - previewH) / 2f;
+
+            if (previewX < handlePad)
+                padLeft = handlePad - previewX;
+            if (canvasWidth - (previewX + previewW) < handlePad)
+                padRight = handlePad - (canvasWidth - (previewX + previewW));
+            if (previewY < handlePad)
+                padTop = handlePad - previewY;
+            if (canvasHeight - (previewY + previewH) < handlePad)
+                padBottom = handlePad - (canvasHeight - (previewY + previewH));
+        }
+
+        var availW = canvasWidth - padLeft - padRight;
+        var availH = canvasHeight - padTop - padBottom;
+        var scale = Math.Min(availW / imageWidth, availH / imageHeight);
+        var x = padLeft + (availW - scale * imageWidth) / 2f;
+        var y = padTop + (availH - scale * imageHeight) / 2f;
 
         _bitmapMatrix = SKMatrix.Concat(SKMatrix.CreateTranslation(x, y), SKMatrix.CreateScale(scale, scale));
         _bitmapMatrix.TryInvert(out _inverseBitmapMatrix);

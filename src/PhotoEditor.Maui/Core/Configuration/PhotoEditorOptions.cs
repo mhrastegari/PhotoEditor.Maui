@@ -90,7 +90,9 @@ public sealed class PhotoEditorCropOptions
 
     public float HandleRadiusViewPx { get; set; } = 10f;
 
-    public float HandleHitRadiusViewPx { get; set; } = 100f;
+    public float HandleHitRadiusViewPx { get; set; } = 35f;
+
+    public float BorderHitToleranceViewPx { get; set; } = 35f;
 
     public byte OverlayDimAlpha { get; set; } = 140;
 
@@ -105,6 +107,7 @@ public sealed class PhotoEditorCropOptions
         MinCropSizeImagePx = MinCropSizeImagePx,
         HandleRadiusViewPx = HandleRadiusViewPx,
         HandleHitRadiusViewPx = HandleHitRadiusViewPx,
+        BorderHitToleranceViewPx = BorderHitToleranceViewPx,
         OverlayDimAlpha = OverlayDimAlpha,
         OverlayBorderColor = OverlayBorderColor,
         OverlayHandleColor = OverlayHandleColor,
